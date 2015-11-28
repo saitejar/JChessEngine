@@ -19,9 +19,10 @@ public class Main {
 		// TODO Auto-generated method stub
 		System.out.println(args);
 		BoardInit.chessInit();
+		@SuppressWarnings("unused")
 		long a = 1L|1L<<8|1L<<16|1L<<24|1L<<32|1L<<40|1L<<48|1L<<56;
-		ArrayList<Integer> b = new ArrayList();
-		ArrayList<Integer> c = new ArrayList();
+		ArrayList<Integer> b = new ArrayList<Integer>();
+		ArrayList<Integer> c = new ArrayList<Integer>();
 		b.add(1);
 		b.add(2);
 		c.addAll(b);

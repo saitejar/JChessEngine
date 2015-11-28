@@ -54,7 +54,7 @@ public class BoardInit {
    * @param BQ	Bit Board Representation of the positions of the Black Queen
    * @param BK	Bit Board Representation of the position of the Black King
    * 
-   * @return void
+   * 
    */
 	public static void stringToBitBoard(String[][] chessBoard,long WP,long WR,long WN,long WB,long WQ,long WK,long BP,long BR,long BN,long BB,long BQ,long BK){
         for (int i=0;i<64;i++) {

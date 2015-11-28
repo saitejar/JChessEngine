@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**This Class contains routines to generate all possible
  * legal moves given a board state
@@ -61,7 +60,7 @@ public class MoveGen {
    */
 	public static ArrayList<Integer> getPossibleWhiteMoves(ArrayList<Integer[]> priorMoves,long WP,long WR,long WN,long WB,long WQ,long WK,long BP,long BR,long BN,long BB,long BQ,long BK){
 		
-		ArrayList<Integer> wMoves = new ArrayList<>(); 				/** Array list of moves*/
+		ArrayList<Integer> wMoves = new ArrayList<Integer>(); 				/** Array list of moves*/
 		
 		wMoves.addAll(getPossibleWhitePawnMoves(priorMoves, WP)); 	/** Add pawn moves */
 		wMoves.addAll(getPossibleWhiteRookMoves(priorMoves, WR)); 	/** Add rook moves */
