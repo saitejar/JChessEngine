@@ -1,12 +1,13 @@
 import java.util.Arrays;
 
-public class BoardInit {
+public class BoardInit implements Utility{
 	
    /**
    * This method is used to initialize the chess board and set the 
    * bit board values for all the different pieces.
    * 
    */
+	
 	public static void chessInit(){
 		/** long 64 bit integer to store bitboard positions of all the unique pieces.
 		 * These 12 long variables are sufficient to represent the current configuration or state of the board
@@ -27,12 +28,12 @@ public class BoardInit {
 		// Lower case to represent Black pieces. Upper case to represent White pieces
 		String[][] chessBoard = {
                 {"r","n","b","q","k","b","n","r"},
-                {"p","p","p","p","p","p","p","p"},
+                {"p","p","p","p","p","p","P","p"},
+                {" "," "," "," "," ","P"," "," "},
                 {" "," "," "," "," "," "," "," "},
                 {" "," "," "," "," "," "," "," "},
                 {" "," "," "," "," "," "," "," "},
-                {" "," "," "," "," "," "," "," "},
-                {"P","P","P","P","P","P","P","P"},
+                {"P","P","P"," "," "," ","P","P"},
                 {"R","N","B","Q","K","B","N","R"}};
 		stringToBitBoard(chessBoard,WP,WR,WN,WB,WQ,WK,BP,BR,BN,BB,BQ,BK);
 	}
@@ -87,7 +88,10 @@ public class BoardInit {
                     break;
             }
         }
-        printBoard(WP,WN,WB,WR,WQ,WK,BP,BN,BB,BR,BQ,BK);
+        System.out.println(WP + " here, please");
+        printBoard(WP,WR,WN,WB,WQ,WK,BP,BR,BN,BB,BQ,BK);
+        Main.WP = WP; Main.WR = WR; Main.WN = WN; Main.WB = WB; Main.WQ = WQ; Main.WK = WK;
+        Main.BP = BP; Main.BR = BR; Main.BN = BN; Main.BB = BB; Main.BQ = BQ; Main.BK = BK;
     }
 
    /**
