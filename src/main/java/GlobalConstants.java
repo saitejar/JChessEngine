@@ -86,6 +86,11 @@ public interface GlobalConstants {
 	public static final byte PAWN_PROMOTION = 1<<6;
 	public static final byte CASTLE = (byte) (1<<7);
 	
+	public static final byte F_CWK = 7;
+	public static final byte F_CWQ = 8;
+	public static final byte F_CBK = 9;
+	public static final byte F_CBQ = 10;
+	
 	// CODE to represent the piece in the 4th byte of move 
 	public static final byte PAWN = 1;
 	public static final byte ROOK = 5;

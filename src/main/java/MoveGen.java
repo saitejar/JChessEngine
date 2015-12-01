@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -27,6 +28,140 @@ public class MoveGen implements GlobalConstants, Utility{
 	protected static long EMPTY;
 	protected static long OCCUPIED;
 	
+	public static long WP=0L;
+	public static long WR=0L,WN=0L,WB=0L,WQ=0L,WK=0L,BP=0L,BR=0L,BN=0L,BB=0L,BQ=0L,BK=0L,EP=0L;
+	public static int perftMaxDepth =3;
+	public static long perftTotalMoveCounter = 0L;
+	public static long perftMoveCounter = 0L;
+	public static boolean CBK = true,CBQ=true, CWK=true, CWQ=true, bw=true;;
+   /**
+   * This method is used to initialize the chess board and set the 
+   * bit board values for all the different pieces.
+   * 
+   */
+	
+	public static void chessInit(){
+		/** long 64 bit integer to store bitboard positions of all the unique pieces.
+		 * These 12 long variables are sufficient to represent the current configuration or state of the board
+		 * WP - White Pawn
+		 * WR - White Rook
+		 * WN - White Knight
+		 * WB - White Bishop
+		 * WQ - White Queen
+		 * WK - White King
+		 * BP - Black Pawn
+		 * BR - Black Rook
+		 * BN - Black Knight
+		 * BB - Black Bishop
+		 * BQ - Black Queen
+		 * BK - Black King
+		 */
+		// Lower case to represent Black pieces. Upper case to represent White pieces
+		String[][] chessBoard = {
+                {"r","n","b","q","k","b","n","r"},
+                {"p","p","p","p","p","p","p","p"},
+                {" "," "," "," "," "," "," "," "},
+                {" "," "," "," "," "," "," "," "},
+                {" "," "," "," "," "," "," "," "},
+                {" "," "," "," "," "," "," "," "},
+                {"P","P","P","P","P","P","P","P"},
+                {"R","N","B","Q","K"," "," ","R"}};
+		stringToBitBoard(chessBoard);
+	}
+   /**
+   * This method is used to set the bit board values of 
+   * various pieces using the string representation of the 
+   * chess board.
+   * @param chessBoard  String representation of the state of chess board 
+   * @param WP	Bit Board Representation of the positions of the White Pawns
+   * @param WR	Bit Board Representation of the positions of the White Rooks
+   * @param WN	Bit Board Representation of the positions of the White Knights
+   * @param WB	Bit Board Representation of the positions of the White Bishops
+   * @param WQ	Bit Board Representation of the positions of the White Queens
+   * @param WK	Bit Board Representation of the position of the White King
+   * @param BP	Bit Board Representation of the positions of the Black Pawns
+   * @param BR	Bit Board Representation of the positions of the Black Rooks
+   * @param BN	Bit Board Representation of the positions of the Black Knights
+   * @param BB	Bit Board Representation of the positions of the Black Bishops
+   * @param BQ	Bit Board Representation of the positions of the Black Queen
+   * @param BK	Bit Board Representation of the position of the Black King
+   * 
+   * 
+   */
+	public static void stringToBitBoard(String[][] chessBoard){
+        for (int i=0;i<64;i++) {
+        	long bitSet = 1L<<i;
+            switch (chessBoard[i/8][i%8]) {
+                case "P":WP|=bitSet;
+                    break;
+                case "N": WN|=bitSet;
+                    break;
+                case "B": WB|=bitSet;
+                    break;
+                case "R": WR|=bitSet;
+                    break;
+                case "Q": WQ|=bitSet;
+                    break;
+                case "K": WK|=bitSet;
+                    break;
+                case "p": BP|=bitSet;
+                    break;
+                case "n": BN|=bitSet;
+                    break;
+                case "b": BB|=bitSet;
+                    break;
+                case "r": BR|=bitSet;
+                    break;
+                case "q": BQ|=bitSet;
+                    break;
+                case "k": BK|=bitSet;
+                    break;
+            }
+        }
+        printBoard();
+    }
+
+   /**
+   * This method is used to print the String representation of the board
+   * from the bit boards values of all the unique pieces.
+   *  
+   * @param WP	Bit Board Representation of the positions of the White Pawns
+   * @param WR	Bit Board Representation of the positions of the White Rooks
+   * @param WN	Bit Board Representation of the positions of the White Knights
+   * @param WB	Bit Board Representation of the positions of the White Bishops
+   * @param WQ	Bit Board Representation of the positions of the White Queens
+   * @param WK	Bit Board Representation of the position of the White King
+   * @param BP	Bit Board Representation of the positions of the Black Pawns
+   * @param BR	Bit Board Representation of the positions of the Black Rooks
+   * @param BN	Bit Board Representation of the positions of the Black Knights
+   * @param BB	Bit Board Representation of the positions of the Black Bishops
+   * @param BQ	Bit Board Representation of the positions of the Black Queen
+   * @param BK	Bit Board Representation of the position of the Black King
+   */
+	public static void printBoard() {
+		// TODO Auto-generated method stub
+        String chessBoard[][]=new String[8][8];
+        for (int i=0;i<64;i++) {
+            chessBoard[i/8][i%8]=" ";
+        }
+        for (int i=0;i<64;i++) {
+            if (((WP>>i)&1)==1) {chessBoard[i/8][i%8]="P";}
+            if (((WN>>i)&1)==1) {chessBoard[i/8][i%8]="N";}
+            if (((WB>>i)&1)==1) {chessBoard[i/8][i%8]="B";}
+            if (((WR>>i)&1)==1) {chessBoard[i/8][i%8]="R";}
+            if (((WQ>>i)&1)==1) {chessBoard[i/8][i%8]="Q";}
+            if (((WK>>i)&1)==1) {chessBoard[i/8][i%8]="K";}
+            if (((BP>>i)&1)==1) {chessBoard[i/8][i%8]="p";}
+            if (((BN>>i)&1)==1) {chessBoard[i/8][i%8]="n";}
+            if (((BB>>i)&1)==1) {chessBoard[i/8][i%8]="b";}
+            if (((BR>>i)&1)==1) {chessBoard[i/8][i%8]="r";}
+            if (((BQ>>i)&1)==1) {chessBoard[i/8][i%8]="q";}
+            if (((BK>>i)&1)==1) {chessBoard[i/8][i%8]="k";}
+        }
+        for (int i=0;i<8;i++) {
+            System.out.println(Arrays.toString(chessBoard[i]));
+        }
+	}
     static long movesHV(int s)
     {
         long binaryS=1L<<s;
@@ -70,7 +205,7 @@ public class MoveGen implements GlobalConstants, Utility{
    * @return Array List of integers; Each integer(4 Bytes) represents a move.
    *  
    */
-	public static ArrayList<Integer> getPossibleWhiteMoves(ArrayList<Integer> priorMoves,long WP,long WR,long WN,long WB,long WQ,long WK,long BP,long BR,long BN,long BB,long BQ,long BK){
+	public static ArrayList<Integer> getPossibleWhiteMoves(){
 		
 		ArrayList<Integer> wMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
 		
@@ -78,17 +213,15 @@ public class MoveGen implements GlobalConstants, Utility{
 		NOT_MY_PIECES = ~(WP|WR|WN|WB|WQ|WK|BK);					/** Can initialize it to NOT_BLACK_PIECES or NOT_WHITE_PIECES */
 		EMPTY = ~(WP|WR|WN|WB|WQ|WK|BP|BR|BN|BB|BQ|BK); 			/** Bit board of empty slots */
 		OCCUPIED = WP|WN|WB|WR|WQ|WK|BP|BN|BB|BR|BQ|BK;				/** Bit Board of occupied slots */
-		wMoves.addAll(getPossibleWhitePawnMoves(priorMoves, WP, BP,BR,BN,BB,BQ)); 	/** Add pawn moves */
-		System.out.println(wMoves + " yes");
-		System.out.println(wMoves.size());
+		wMoves.addAll(getPossibleWhitePawnMoves()); 	/** Add pawn moves */
+		//System.out.println(wMoves + " yes");
+		//System.out.println(wMoves.size());
 		wMoves.addAll(getPossibleRookMoves(WR, BP,BR,BN,BB,BQ)); 	/** Add rook moves */
 		wMoves.addAll(getPossibleKnightMoves(WN, BP,BR,BN,BB,BQ)); /** Add Knight moves */
 		wMoves.addAll(getPossibleBishopMoves(WB, BP,BR,BN,BB,BQ)); /** Add Bishop moves */
 		wMoves.addAll(getPossibleQueenMoves(WQ, BP,BR,BN,BB,BQ)); 	/** Add Queen moves */
 		wMoves.addAll(getPossibleKingMoves(WK, BP,BR,BN,BB,BQ)); 	/** Add King moves */
-		System.out.println(wMoves);
-		System.out.println(wMoves.size());
-		BK = (unsafeForBlack(WP,WR,WN,WB,WQ,WK,BP,BR,BN,BB,BQ,BK)) & BK;
+		wMoves.addAll(getPossibleCastleWhiteMoves());
 		return wMoves;
 	}
 
@@ -99,9 +232,9 @@ public class MoveGen implements GlobalConstants, Utility{
 	* byte  meaning        example <br>
 	* ==================================== <br>
 	* 1    from-square 		 36 (A5) <br>
-	* 2    to-square			 49 (B6) <br>
+	* 2    to-square	     49 (B6) <br>
 	* 3    flags  			 xx (enPassant capture or pawn promotion or castles or double pawn push) <br>
-	* 4 	  captured-piece  	 xx (black pawn) <br>
+	* 4    captured-piece  	 xx (black pawn) <br>
 	* 
 	* @param priorMoves  Array List of integers representing previous moves
 	* @param WP	Bit Board Representation of the positions of the White Pawns
@@ -120,7 +253,7 @@ public class MoveGen implements GlobalConstants, Utility{
 	* @return Array List of integers; Each integer(4 Bytes) represents a move.
 	*  
 	*/
-	public static ArrayList<Integer> getPossibleBlackMoves(ArrayList<Integer> priorMoves,long WP,long WR,long WN,long WB,long WQ,long WK,long BP,long BR,long BN,long BB,long BQ,long BK){
+	public static ArrayList<Integer> getPossibleBlackMoves(){
 		
 		ArrayList<Integer> wMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
 		
@@ -128,32 +261,34 @@ public class MoveGen implements GlobalConstants, Utility{
 		NOT_MY_PIECES = ~(BP|BR|BN|BB|BQ|BK|BK);					/** Can initialize it to NOT_BLACK_PIECES or NOT_BHITE_PIECES */
 		EMPTY = ~(WP|WR|WN|WB|WQ|WK|BP|BR|BN|BB|BQ|BK); 			/** Bit board of empty slots */
 		OCCUPIED = WP|WN|WB|WR|WQ|WK|BP|BN|BB|BR|BQ|BK;				/** Bit Board of occupied slots */
-		wMoves.addAll(getPossibleWhitePawnMoves(priorMoves, WP, BP,BR,BN,BB,BQ)); 	/** Add pawn moves */
-		System.out.println(wMoves + " yes");
-		System.out.println(wMoves.size());
-		wMoves.addAll(getPossibleRookMoves(WR, BP,BR,BN,BB,BQ)); 	/** Add rook moves */
-		wMoves.addAll(getPossibleKnightMoves(WN, BP,BR,BN,BB,BQ)); /** Add Knight moves */
-		wMoves.addAll(getPossibleBishopMoves(WB, BP,BR,BN,BB,BQ)); /** Add Bishop moves */
-		wMoves.addAll(getPossibleQueenMoves(WQ, BP,BR,BN,BB,BQ)); 	/** Add Queen moves */
-		wMoves.addAll(getPossibleKingMoves(WK, BP,BR,BN,BB,BQ)); 	/** Add King moves */
-		System.out.println(wMoves);
-		System.out.println(wMoves.size());
-		BK = (unsafeForBlack(WP,WR,WN,WB,WQ,WK,BP,BR,BN,BB,BQ,BK)) & BK;
+		wMoves.addAll(getPossibleBlackPawnMoves()); 	/** Add pawn moves */
+		//System.out.println("after adding pawn moves - "+wMoves.size());
+		wMoves.addAll(getPossibleRookMoves(BR, WP,WR,WN,WB,WQ)); 	/** Add rook moves */
+		//System.out.println("after adding rook moves - "+wMoves.size());
+		wMoves.addAll(getPossibleKnightMoves(BN, WP,WR,WN,WB,WQ)); /** Add Knight moves */
+		//System.out.println("after adding Knight moves - "+wMoves.size());
+		wMoves.addAll(getPossibleBishopMoves(BB, WP,WR,WN,WB,WQ)); /** Add Bishop moves */
+		//System.out.println("after adding bishop moves - "+wMoves.size());
+		wMoves.addAll(getPossibleQueenMoves(BQ, WP,WR,WN,WB,WQ)); 	/** Add Queen moves */
+		//System.out.println("after adding queen moves - "+wMoves.size());
+		wMoves.addAll(getPossibleKingMoves(BK, WP,WR,WN,WB,WQ)); 	/** Add King moves */
+		//System.out.println("after adding king moves - "+wMoves.size());
+		wMoves.addAll(getPossibleCastleBlackMoves());
 		return wMoves;
 	}
 
 	/**
-	 * @param priorMoves 
-	 * @param WK
+	 * @param K
+	 * @param YP
 	 * @return
 	 */
-	public static ArrayList<Integer> getPossibleKingMoves(long WK, long BP, long BR, long BN, long BB, long BQ) {
+	public static ArrayList<Integer> getPossibleKingMoves(long K, long YP, long YR, long YN, long YB, long YQ) {
 		// TODO Auto-generated method stub
 		ArrayList<Integer> wKMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
         long attackRange;
         int move = 0, temp = 0;
-        int pLoc=Long.numberOfTrailingZeros(WK);
-        System.out.println(pLoc + "- white ing pos :"+ WK);
+        int pLoc=Long.numberOfTrailingZeros(K);
+        //System.out.println(pLoc + "- white ing pos :"+ WK);
         if (pLoc>9)
         {
             attackRange=KING_SPAN<<(pLoc-9);
@@ -175,15 +310,15 @@ public class MoveGen implements GlobalConstants, Utility{
             move |= pLoc;
             move |= index<<8;
             if((j&YOUR_PIECES)!=0){
-    			if((BP&j)!=0)
+    			if((YP&j)!=0)
     				temp = PAWN;
-    			if((BR&j)!=0)
+    			if((YR&j)!=0)
     				temp = ROOK;	
-    			if((BN&j)!=0)
+    			if((YN&j)!=0)
     				temp = KNIGHT;
-    			if((BB&j)!=0)
+    			if((YB&j)!=0)
     				temp = BISHOP;
-    			if((BQ&j)!=0)
+    			if((YQ&j)!=0)
     				temp = QUEEN;
             }      
             move |= temp<<24;
@@ -196,11 +331,11 @@ public class MoveGen implements GlobalConstants, Utility{
 	}
 	
 	/**
-	 * @param priorMoves 
 	 * @param Q
+	 * @param YP
 	 * @return
 	 */
-	public static ArrayList<Integer> getPossibleQueenMoves(long Q,long BP, long BR, long BN, long BB, long BQ) {
+	public static ArrayList<Integer> getPossibleQueenMoves(long Q,long YP, long YR, long YN, long YB, long YQ) {
 		// TODO Auto-generated method stub
 		ArrayList<Integer> wQMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
         long i=Q&~(Q-1);
@@ -218,15 +353,15 @@ public class MoveGen implements GlobalConstants, Utility{
                 move |= pLoc;
                 move |= index<<8;
                 if((j&YOUR_PIECES)!=0){
-        			if((BP&j)!=0)
+        			if((YP&j)!=0)
         				temp = PAWN;
-        			if((BR&j)!=0)
+        			if((YR&j)!=0)
         				temp = ROOK;	
-        			if((BN&j)!=0)
+        			if((YN&j)!=0)
         				temp = KNIGHT;
-        			if((BB&j)!=0)
+        			if((YB&j)!=0)
         				temp = BISHOP;
-        			if((BQ&j)!=0)
+        			if((YQ&j)!=0)
         				temp = QUEEN;
                 }
                 move |= temp<<24;
@@ -242,11 +377,11 @@ public class MoveGen implements GlobalConstants, Utility{
 	}
 	
 	/**
-	 * @param priorMoves 
-	 * @param N
+	 * @param N 
+	 * @param YP
 	 * @return
 	 */
-	public static ArrayList<Integer> getPossibleKnightMoves(long N, long BP, long BR, long BN, long BB, long BQ) {
+	public static ArrayList<Integer> getPossibleKnightMoves(long N, long YP, long YR, long YN, long YB, long YQ) {
 		ArrayList<Integer> wNMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
         long p=N&~(N-1); 
         int temp = 0, move=0;
@@ -275,15 +410,15 @@ public class MoveGen implements GlobalConstants, Utility{
                 move |= pLoc;
                 move |= index<<8;
                 if((j&YOUR_PIECES)!=0){
-        			if((BP&j)!=0)
+        			if((YP&j)!=0)
         				temp = PAWN;
-        			if((BR&j)!=0)
+        			if((YR&j)!=0)
         				temp = ROOK;	
-        			if((BN&j)!=0)
+        			if((YN&j)!=0)
         				temp = KNIGHT;
-        			if((BB&j)!=0)
+        			if((YB&j)!=0)
         				temp = BISHOP;
-        			if((BQ&j)!=0)
+        			if((YQ&j)!=0)
         				temp = QUEEN;
                 }      
                 move |= temp<<24;
@@ -299,11 +434,11 @@ public class MoveGen implements GlobalConstants, Utility{
     }
 
 	/**
-	 * @param priorMoves 
 	 * @param B
+	 * @param YP
 	 * @return
 	 */
-	public static ArrayList<Integer> getPossibleBishopMoves(long B,long BP, long BR, long BN, long BB, long BQ) {
+	public static ArrayList<Integer> getPossibleBishopMoves(long B,long YP, long YR, long YN, long YB, long YQ) {
 		// TODO Auto-generated method stub
 		ArrayList<Integer> wBMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
         long i=B&~(B-1);
@@ -321,15 +456,15 @@ public class MoveGen implements GlobalConstants, Utility{
                 move |= pLoc;
                 move |= index<<8;
                 if((j&YOUR_PIECES)!=0){
-        			if((BP&j)!=0)
+        			if((YP&j)!=0)
         				temp = PAWN;
-        			if((BR&j)!=0)
+        			if((YR&j)!=0)
         				temp = ROOK;	
-        			if((BN&j)!=0)
+        			if((YN&j)!=0)
         				temp = KNIGHT;
-        			if((BB&j)!=0)
+        			if((YB&j)!=0)
         				temp = BISHOP;
-        			if((BQ&j)!=0)
+        			if((YQ&j)!=0)
         				temp = QUEEN;
                 }
                 move |= temp<<24;
@@ -345,13 +480,13 @@ public class MoveGen implements GlobalConstants, Utility{
 	}
 	
 	/**
-	 * @param priorMoves 
-	 * @param R
+	 * @param R 
+	 * @param YP
 	 * @return
 	 */
-	public static ArrayList<Integer> getPossibleRookMoves(long R, long BP, long BR, long BN, long BB, long BQ) {
+	public static ArrayList<Integer> getPossibleRookMoves(long R, long YP, long YR, long YN, long YB, long YQ) {
 		// TODO Auto-generated method stub
-		ArrayList<Integer> wRMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
+		ArrayList<Integer> RMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
         long i=R&~(R-1);
         int move = 0;
         long possibility;
@@ -367,19 +502,19 @@ public class MoveGen implements GlobalConstants, Utility{
                 move |= pLoc;
                 move |= index<<8;
                 if((j&YOUR_PIECES)!=0){
-        			if((BP&j)!=0)
+        			if((YP&j)!=0)
         				temp = PAWN;
-        			if((BR&j)!=0)
+        			if((YR&j)!=0)
         				temp = ROOK;	
-        			if((BN&j)!=0)
+        			if((YN&j)!=0)
         				temp = KNIGHT;
-        			if((BB&j)!=0)
+        			if((YB&j)!=0)
         				temp = BISHOP;
-        			if((BQ&j)!=0)
+        			if((YQ&j)!=0)
         				temp = QUEEN;
                 }
                 move |= temp<<24;
-                wRMoves.add(move);
+                RMoves.add(move);
                 move = 0;
                 possibility&=~j;
                 temp = 0;
@@ -388,7 +523,7 @@ public class MoveGen implements GlobalConstants, Utility{
             R&=~i;
             i=R&~(R-1);
         }
-		return wRMoves;
+		return RMoves;
 	}
 	
 	/**
@@ -399,16 +534,16 @@ public class MoveGen implements GlobalConstants, Utility{
 	 * @param BN 
 	 * @param BR 
 	 * @param BP 
-	 * @return
+	 * @return -
 	 */
-	public static ArrayList<Integer> getPossibleWhitePawnMoves(ArrayList<Integer> priorMoves, long WP, long BP, long BR, long BN, long BB, long BQ) {
+	public static ArrayList<Integer> getPossibleWhitePawnMoves(){
 		// TODO Auto-generated method stub
 		ArrayList<Integer> wPMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
 		long PAWN_MOVES, nextSetBit = 0;
 		int move = 0, temp = 0;
 		// Right Capture
-		System.out.println("BLACK pieces");
-		drawBitboard(YOUR_PIECES);
+		//System.out.println("BLACK pieces");
+		//drawBitboard(YOUR_PIECES);
 		PAWN_MOVES = (WP>>7) & (YOUR_PIECES) & ~(RANK_8) & ~(FILE_A);
 		nextSetBit = PAWN_MOVES & ~(PAWN_MOVES-1);
 		while(nextSetBit!=0){
@@ -458,7 +593,7 @@ public class MoveGen implements GlobalConstants, Utility{
 		PAWN_MOVES = (WP>>8)&EMPTY&~RANK_8;
 		nextSetBit = PAWN_MOVES & ~(PAWN_MOVES-1);
 		while(nextSetBit!=0){
-			System.out.println(nextSetBit + " ---- "+ Long.numberOfTrailingZeros(nextSetBit));
+			//System.out.println(nextSetBit + " ---- "+ Long.numberOfTrailingZeros(nextSetBit));
 			move |= (Long.numberOfTrailingZeros(nextSetBit))<<8;
 			move |= (Long.numberOfTrailingZeros(nextSetBit)+8);
 			wPMoves.add(move);
@@ -478,16 +613,24 @@ public class MoveGen implements GlobalConstants, Utility{
 			PAWN_MOVES&=~nextSetBit;
 			nextSetBit = (PAWN_MOVES) & ~(PAWN_MOVES-1);
 		}
-		// EnPassant - add later
-		/*if(priorMoves.isEmpty()!=true){
-			move = priorMoves.get(priorMoves.size()-1); 
-			int diff = ((move&(0xff000000))>>3) - ((move&(0x00ff0000)) >>2);
-			if(Math.abs(diff) == 16){
-				
-			}
-			if()
-		}*/
-		
+		// EnPassant - right
+		nextSetBit = (WP << 1)&BP&RANK_5&~FILE_A&EP;
+		if(nextSetBit!=0){
+			move = 0;
+			move |= PAWN<<24;
+			move |= EN_PASSANT<<16;
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-1);
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-8);
+		}
+		// EnPassant - left
+		nextSetBit = (WP >> 1)&BP&RANK_5&~FILE_H&EP;
+		if(nextSetBit!=0){
+			move = 0;
+			move |= PAWN<<24;
+			move |= EN_PASSANT<<16;
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-1);
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-8);
+		}
 		// Pawn Promotion capture right
 		PAWN_MOVES=(WP>>7)&YOUR_PIECES&RANK_8&~FILE_A;
 		nextSetBit = PAWN_MOVES & ~(PAWN_MOVES-1);
@@ -573,33 +716,32 @@ public class MoveGen implements GlobalConstants, Utility{
 			PAWN_MOVES&=~nextSetBit;
 			nextSetBit = (PAWN_MOVES) & ~(PAWN_MOVES-1);
 		}
-		
 		return wPMoves;
 	}
 	/**
 	 * @param priorMoves 
-	 * @param WP
+	 * @param BP
 	 * @param WQ 
 	 * @param WB 
 	 * @param WN 
 	 * @param WR 
-	 * @param WP 
-	 * @return
+	 * @param BP 
+	 * @return --
 	 */
-	public static ArrayList<Integer> getPossibleBlackPawnMoves(ArrayList<Integer> priorMoves, long BP, long WP, long WR, long WN, long WB, long WQ) {
+	public static ArrayList<Integer> getPossibleBlackPawnMoves() {
 		// TODO Auto-generated method stub
-		ArrayList<Integer> wPMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
+		ArrayList<Integer> bPMoves = new ArrayList<Integer>(); 		/** Array list of moves*/
 		long PAWN_MOVES, nextSetBit = 0;
 		int move = 0, temp = 0;
 		// Right Capture
-		System.out.println("BLACK pieces");
-		drawBitboard(YOUR_PIECES);
-		PAWN_MOVES = (WP<<7) & (YOUR_PIECES) & ~(RANK_8) & ~(FILE_A);
+		//System.out.println("BLACK pieces");
+		//drawBitboard(YOUR_PIECES);
+		PAWN_MOVES = (BP<<7) & (YOUR_PIECES) & ~(RANK_1) & ~(FILE_H);
 		nextSetBit = PAWN_MOVES & ~(PAWN_MOVES-1);
 		while(nextSetBit!=0){
 			move |= (Long.numberOfTrailingZeros(nextSetBit))<<8;
-			move |= (Long.numberOfTrailingZeros(nextSetBit)+7);
-			if((WP&nextSetBit)!=0)
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-7);
+			if((BP&nextSetBit)!=0)
 				temp = PAWN;
 			if((WR&nextSetBit)!=0)
 				temp = ROOK;	
@@ -611,18 +753,18 @@ public class MoveGen implements GlobalConstants, Utility{
 				temp = QUEEN;
 			
 			move |= temp<<24;
-			wPMoves.add(move);
+			bPMoves.add(move);
 			move = 0;
 			PAWN_MOVES&=~nextSetBit;
 			nextSetBit = (PAWN_MOVES) & ~(PAWN_MOVES-1);
 		}
 		// Left Capture
-		PAWN_MOVES = (WP>>9) & (YOUR_PIECES) & ~(RANK_8) & ~(FILE_H);
+		PAWN_MOVES = (BP<<9) & (YOUR_PIECES) & ~(RANK_1) & ~(FILE_A);
 		nextSetBit = PAWN_MOVES & ~(PAWN_MOVES-1);
 		while(nextSetBit!=0){
 			move |= (Long.numberOfTrailingZeros(nextSetBit))<<8;
-			move |= (Long.numberOfTrailingZeros(nextSetBit)+9);
-			if((WP&nextSetBit)!=0)
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-9);
+			if((BP&nextSetBit)!=0)
 				temp = PAWN;
 			if((WR&nextSetBit)!=0)
 				temp = ROOK;	
@@ -634,52 +776,62 @@ public class MoveGen implements GlobalConstants, Utility{
 				temp = QUEEN;
 			
 			move |= temp<<24;
-			wPMoves.add(move);
+			bPMoves.add(move);
 			move = 0;
 			PAWN_MOVES&=~nextSetBit;
 			nextSetBit = (PAWN_MOVES) & ~(PAWN_MOVES-1);
 		}
 		// Simple Push
-		PAWN_MOVES = (WP>>8)&EMPTY&~RANK_8;
+		PAWN_MOVES = (BP<<8)&EMPTY&~RANK_1;
 		nextSetBit = PAWN_MOVES & ~(PAWN_MOVES-1);
 		while(nextSetBit!=0){
-			System.out.println(nextSetBit + " ---- "+ Long.numberOfTrailingZeros(nextSetBit));
+			//System.out.println(nextSetBit + " ---- "+ Long.numberOfTrailingZeros(nextSetBit));
 			move |= (Long.numberOfTrailingZeros(nextSetBit))<<8;
-			move |= (Long.numberOfTrailingZeros(nextSetBit)+8);
-			wPMoves.add(move);
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-8);
+			bPMoves.add(move);
 			move = 0;
 			PAWN_MOVES&=~nextSetBit;
 			nextSetBit = (PAWN_MOVES) & ~(PAWN_MOVES-1);
 		}
 		// Double Push
-		PAWN_MOVES = (WP>>16)&(EMPTY)&(RANK_4)&(EMPTY>>8);
+		PAWN_MOVES = (BP<<16)&(EMPTY)&(RANK_5)&(EMPTY<<8);
 		nextSetBit = PAWN_MOVES & ~(PAWN_MOVES-1);
 		while(nextSetBit!=0){
 			move |= (Long.numberOfTrailingZeros(nextSetBit))<<8;
-			move |= (Long.numberOfTrailingZeros(nextSetBit)+16);
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-16);
 			move |= DOUBLE_PUSH<<16;
-			wPMoves.add(move);
+			bPMoves.add(move);
 			move = 0;
 			PAWN_MOVES&=~nextSetBit;
 			nextSetBit = (PAWN_MOVES) & ~(PAWN_MOVES-1);
 		}
-		// EnPassant - add later
-		/*if(priorMoves.isEmpty()!=true){
-			move = priorMoves.get(priorMoves.size()-1); 
-			int diff = ((move&(0xff000000))>>3) - ((move&(0x00ff0000)) >>2);
-			if(Math.abs(diff) == 16){
-				
-			}
-			if()
-		}*/
+		// EnPassant - right
+		nextSetBit = (BP >> 1)&WP&RANK_4&~FILE_H&EP;
+		if(nextSetBit!=0){
+			move = 0;
+			move |= PAWN<<24;
+			move |= EN_PASSANT<<16;
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-1);
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-8);
+		}
+		// EnPassant - left
+		nextSetBit = (BP << 1)&WP&RANK_4&~FILE_A&EP;
+		if(nextSetBit!=0){
+			move = 0;
+			move |= PAWN<<24;
+			move |= EN_PASSANT<<16;
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-1);
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-8);
+		}
 		
 		// Pawn Promotion capture right
-		PAWN_MOVES=(WP>>7)&YOUR_PIECES&RANK_8&~FILE_A;
+		PAWN_MOVES=(BP<<7)&YOUR_PIECES&RANK_1&~FILE_H;
 		nextSetBit = PAWN_MOVES & ~(PAWN_MOVES-1);
 		while(nextSetBit!=0){
+			System.out.println("Helooooo.... SOMETHING SOMETHING...");
 			move |= (Long.numberOfTrailingZeros(nextSetBit))<<8;
-			move |= (Long.numberOfTrailingZeros(nextSetBit)+7);
-			if((WP&nextSetBit)!=0)
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-7);
+			if((BP&nextSetBit)!=0)
 				temp = PAWN;
 			if((WR&nextSetBit)!=0)
 				temp = ROOK;	
@@ -692,13 +844,13 @@ public class MoveGen implements GlobalConstants, Utility{
 			move |= temp<<24;
 			move |= PAWN_PROMOTION<<16;
 			temp = move|ROOK<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			temp = move|KNIGHT<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			temp = move|BISHOP<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			temp = move|QUEEN<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			move = 0;
 			temp = 0;
 			PAWN_MOVES&=~nextSetBit;
@@ -706,12 +858,12 @@ public class MoveGen implements GlobalConstants, Utility{
 		}
 		
 		// Pawn Promotion capture left
-		PAWN_MOVES=(WP>>9)&YOUR_PIECES&RANK_8&~FILE_H;
+		PAWN_MOVES=(BP<<9)&YOUR_PIECES&RANK_1&~FILE_A;
 		nextSetBit = PAWN_MOVES & ~(PAWN_MOVES-1);
 		while(nextSetBit!=0){
 			move |= (Long.numberOfTrailingZeros(nextSetBit))<<8;
-			move |= (Long.numberOfTrailingZeros(nextSetBit)+9);
-			if((WP&nextSetBit)!=0)
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-9);
+			if((BP&nextSetBit)!=0)
 				temp = PAWN;
 			if((WR&nextSetBit)!=0)
 				temp = ROOK;	
@@ -724,13 +876,13 @@ public class MoveGen implements GlobalConstants, Utility{
 			move |= temp<<24;
 			move |= PAWN_PROMOTION<<16;
 			temp = move|ROOK<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			temp = move|KNIGHT<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			temp = move|BISHOP<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			temp = move|QUEEN<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			move = 0;
 			temp = 0;
 			PAWN_MOVES&=~nextSetBit;
@@ -739,29 +891,76 @@ public class MoveGen implements GlobalConstants, Utility{
 		
 		
 		// Pawn Promotion Simple Push
-		PAWN_MOVES=(WP>>8)&EMPTY&RANK_8;
+		PAWN_MOVES=(BP<<8)&EMPTY&RANK_1;
 		nextSetBit = PAWN_MOVES & ~(PAWN_MOVES-1);
 		while(nextSetBit!=0){
 			move |= (Long.numberOfTrailingZeros(nextSetBit))<<8;
-			move |= (Long.numberOfTrailingZeros(nextSetBit)+8);
+			move |= (Long.numberOfTrailingZeros(nextSetBit)-8);
 			move |= PAWN_PROMOTION<<16;
 			temp = move|ROOK<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			temp = move|KNIGHT<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			temp = move|BISHOP<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			temp = move|QUEEN<<16;
-			wPMoves.add(temp);
+			bPMoves.add(temp);
 			move = 0;
 			temp = 0;
 			PAWN_MOVES&=~nextSetBit;
 			nextSetBit = (PAWN_MOVES) & ~(PAWN_MOVES-1);
 		}
 		
-		return wPMoves;
+		return bPMoves;
 	}
-    public static long unsafeForWhite(long WP,long WR,long WN,long WB,long WQ,long WK,long BP,long BR,long BN,long BB,long BQ,long BK)
+	public static ArrayList<Integer> getPossibleCastleWhiteMoves() {
+		ArrayList<Integer> movesCastle = new ArrayList<Integer>();
+		int move = 0;
+		long unSafe = unsafeForWhite();
+		// Castle White King
+		if(CWK){ // => that king and the rook, dint move till now, we shd update this later.
+			// positions between shd be unoccupied and safe!
+			if(((unSafe |OCCUPIED) & ((1L<<61)|(1L<<62)))==0){
+				move |= CASTLE<<16;
+				move |= F_CWK<<16;
+				movesCastle.add(move);
+			}
+		}
+		if(CWQ){ // => that king and the rook, dint move till now, we shd update this later.
+			// positions between shd be unoccupied and safe!
+			if(((unSafe |OCCUPIED) & ((1L<<57)|(1L<<58)|(1L<<59)))==0){
+				move |= CASTLE<<16;
+				move |= F_CWQ<<16;
+				movesCastle.add(move);
+			}
+		}
+		return movesCastle;
+		
+	}
+	public static ArrayList<Integer> getPossibleCastleBlackMoves() {
+		ArrayList<Integer> movesCastle = new ArrayList<Integer>();
+		int move = 0;
+		long unSafe = unsafeForBlack();
+		// Castle White King
+		if(CBK){ // => that king and the rook, dint move till now, we shd update this later.
+			// positions between shd be unoccupied and safe!
+			if(((unSafe |OCCUPIED) & ((1L<<5)|(1L<<6)))==0){
+				move |= CASTLE<<16;
+				move |= F_CBK<<16;
+				movesCastle.add(move);
+			}
+		}
+		if(CBQ){ // => that king and the rook, dint move till now, we shd update this later.
+			// positions between shd be unoccupied and safe!
+			if(((unSafe |OCCUPIED) & ((1L<<1)|(1L<<2)|(1L<<3)))==0){
+				move |= CASTLE<<16;
+				move |= F_CBQ<<16;
+				movesCastle.add(move);
+			}
+		}
+		return movesCastle;
+	}
+    public static long unsafeForWhite()
     {
         long unsafe;
         OCCUPIED=WP|WN|WB|WR|WQ|WK|BP|BN|BB|BR|BQ|BK;
@@ -770,7 +969,8 @@ public class MoveGen implements GlobalConstants, Utility{
         unsafe|=((BP<<9)&~FILE_H);//pawn capture left
         long possibility;
         //knight
-        long i=BN&~(BN-1);
+        Long temp = BN;
+        long i=temp&~(temp-1);
         while(i != 0)
         {
             int iLocation=Long.numberOfTrailingZeros(i);
@@ -789,8 +989,8 @@ public class MoveGen implements GlobalConstants, Utility{
                 possibility &=~FILE_AB;
             }
             unsafe |= possibility;
-            BN&=~i;
-            i=BN&~(BN-1);
+            temp&=~i;
+            i=temp&~(temp-1);
         }
         //bishop/queen
         long QB=BQ|BB;
@@ -831,11 +1031,11 @@ public class MoveGen implements GlobalConstants, Utility{
             possibility &=~FILE_AB;
         }
         unsafe |= possibility;
-        System.out.println();
-        drawBitboard(unsafe);
+        //System.out.println();
+        //drawBitboard(unsafe);
         return unsafe;
     }
-    public static long unsafeForBlack(long WP,long WR,long WN,long WB,long WQ,long WK,long BP,long BR,long BN,long BB,long BQ,long BK)
+    public static long unsafeForBlack()
     {
         long unsafe;
         OCCUPIED=WP|WN|WB|WR|WQ|WK|BP|BN|BB|BR|BQ|BK;
@@ -844,7 +1044,8 @@ public class MoveGen implements GlobalConstants, Utility{
         unsafe|=((WP>>>9)&~FILE_H);//pawn capture left
         long possibility;
         //knight
-        long i=WN&~(WN-1);
+        long temp = WN;
+        long i=temp&~(temp-1);
         while(i != 0)
         {
             int iLocation=Long.numberOfTrailingZeros(i);
@@ -863,8 +1064,8 @@ public class MoveGen implements GlobalConstants, Utility{
                 possibility &=~FILE_AB;
             }
             unsafe |= possibility;
-            WN&=~i;
-            i=WN&~(WN-1);
+            temp&=~i;
+            i=temp&~(temp-1);
         }
         //bishop/queen
         long QB=WQ|WB;
@@ -905,9 +1106,180 @@ public class MoveGen implements GlobalConstants, Utility{
             possibility &=~FILE_AB;
         }
         unsafe |= possibility;
-        System.out.println();
-        drawBitboard(unsafe);
+        //System.out.println();
+        //drawBitboard(unsafe);
         return unsafe;
+    }
+    
+    
+    public static void makeMove(int move,boolean bw){
+    	EP = 0L;
+    	long[] R = {0L, 0L, 0L}; /** To return the changed bit board and also tell which bit board is changed*/
+    	int from, to, promotedTo, moveType, oppPieceKilled;
+    	from = move & 0x000000ff;
+    	to = (move & 0x0000ff00)>>8;
+    	promotedTo = (move & 0x000f0000)>>16;
+    	moveType = (move & 0x00f00000)>>16;
+    	oppPieceKilled = (move & 0xff000000)>>24;
+    	//System.out.println(oppPieceKilled + " - piece killed");
+    	if(bw){
+			if(oppPieceKilled != 0){
+				if(oppPieceKilled == QUEEN){
+	    			BQ &= ~(1L<<to);
+	    		}
+				if(oppPieceKilled == ROOK){
+					BR &= ~(1L<<to);
+	    		}
+				if(oppPieceKilled == BISHOP){
+					BR &= ~(1L<<to);
+	    		}
+				if(oppPieceKilled == KNIGHT){
+					BR &= ~(1L<<to);
+	    		}
+				if(oppPieceKilled == PAWN){
+	    			BP &= ~(1L<<to);
+	    		}
+			}
+    	}
+    	else{
+	    	if(oppPieceKilled != 0){
+				if(oppPieceKilled == QUEEN){
+	    			WQ &= ~(1L<<to);
+	    		}
+				if(oppPieceKilled == ROOK){
+					WR &= ~(1L<<to);
+	    		}
+				if(oppPieceKilled == BISHOP){
+					WR &= ~(1L<<to);
+	    		}
+				if(oppPieceKilled == KNIGHT){
+					WR &= ~(1L<<to);
+	    		}
+				if(oppPieceKilled == KNIGHT){
+					WP &= ~(1L<<to);
+	    		}
+			}
+    	}
+    	// Pawn Promotion:
+    	long temp = 0L;
+    	if(moveType == PAWN_PROMOTION){
+    		if(bw){
+    			WP &= ~(1L<<from);
+    			if(promotedTo == QUEEN){
+        			WQ |= (1L<<to);
+        		}
+    			if(promotedTo == ROOK){
+    				WR |= (1L<<to);
+        		}
+    			if(promotedTo == BISHOP){
+    				WB |= (1L<<to);
+        		}
+    			if(promotedTo == KNIGHT){
+    				WN |= (1L<<to);
+        		}
+    		}
+    		else{
+    			BP &= ~(1L<<from);
+    			if(promotedTo == QUEEN){
+        			BQ |= (1L<<to);
+        		}
+    			if(promotedTo == ROOK){
+    				BR |= (1L<<to);
+        		}
+    			if(promotedTo == BISHOP){
+    				BB |= (1L<<to);
+        		}
+    			if(promotedTo == KNIGHT){
+    				BN |= (1L<<to);
+        		}
+    		}
+    		return;
+    	}
+    	// Double Push
+    	if(moveType == DOUBLE_PUSH){
+    		EP = FileMasks8[from%8]; // file of the pawn position
+    		if(bw)
+    			WP = (WP & ~(1L<<from)) | (1L<<to);
+    		else
+    			BP = (BP & ~(1L<<from)) | (1L<<to);
+    		
+    		return;
+    	}
+    	// Castling
+    	if(moveType == CASTLE){
+    		if(promotedTo==F_CWK && bw){
+    			WR &= ~(1L<<63);
+    			WR |= (1L<<60);
+    			WK &= ~(1L<<60);
+    			WK |= (1L<<63);
+    		}
+    		if(promotedTo==F_CWQ && bw){
+    			WR &= ~(1L<<56);
+    			WR |= (1L<<60);
+    			WK &= ~(1L<<60);
+    			WK |= (1L<<56);	
+    		}
+    		if(promotedTo==F_CBK && (!bw)){
+    			BR &= ~(1L<<7);
+    			BR |= (1L<<4);
+    			BK &= ~(1L<<4);
+    			BK |= (1L<<7);
+    		}
+    		if(promotedTo==F_CBQ && (!bw)){
+    			BR &= ~(1L);
+    			BR |= (1L<<4);
+    			BK &= ~(1L<<4);
+    			BK |= (1L);
+    		}
+    		return;
+    	}
+    	if(bw){
+    		if((WP & (1L<<from))!=0){
+    			WP = (WP & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((WR & (1L<<from))!=0){
+    			WR = (WR & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((WN & (1L<<from))!=0){
+    			WN = (WN & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((WB & (1L<<from))!=0){
+    			WB = (WB & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((WQ & (1L<<from))!=0){
+    			WQ = (WQ & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((WQ & (1L<<from))!=0){
+    			WQ = (WQ & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((WK & (1L<<from))!=0){
+    			WK = (WK & ~(1L<<from)) | (1L<<to);
+    		}
+    	}
+    	else{
+    		if((BP & (1L<<from))!=0){
+    			BP = (BP & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((BR & (1L<<from))!=0){
+    			BR = (BR & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((BN & (1L<<from))!=0){
+    			BN = (BN & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((BB & (1L<<from))!=0){
+    			BB = (BB & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((BQ & (1L<<from))!=0){
+    			BQ = (BQ & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((BQ & (1L<<from))!=0){
+    			BQ = (BQ & ~(1L<<from)) | (1L<<to);
+    		}
+    		if((BK & (1L<<from))!=0){
+    			BK = (BK & ~(1L<<from)) | (1L<<to);
+    		}
+    	}
+    	return;
     }
     
     public static void drawBitboard(long bitBoard) {
@@ -923,5 +1295,182 @@ public class MoveGen implements GlobalConstants, Utility{
             System.out.println(Arrays.toString(chessBoard[i]));
         }
     }
+
+    // Standard Routine: Source Online , A string to represent the board state, whose turn etc.
+    public static void importFEN(String fenString) {
+    	WP=0; WN=0; WB=0;
+        WR=0; WQ=0; WK=0;
+        BP=0; BN=0; BB=0;
+        BR=0; BQ=0; BK=0;
+        CWK=false; CWQ=false;
+        CBK=false; CBQ=false;
+		int charIndex = 0;
+		int boardIndex = 0;
+		while (fenString.charAt(charIndex) != ' ')
+		{
+			switch (fenString.charAt(charIndex++))
+			{
+			case 'P': WP |= (1L << boardIndex++);
+				break;
+			case 'p': BP |= (1L << boardIndex++);
+				break;
+			case 'N': WN |= (1L << boardIndex++);
+				break;
+			case 'n': BN |= (1L << boardIndex++);
+				break;
+			case 'B': WB |= (1L << boardIndex++);
+				break;
+			case 'b': BB |= (1L << boardIndex++);
+				break;
+			case 'R': WR |= (1L << boardIndex++);
+				break;
+			case 'r': BR |= (1L << boardIndex++);
+				break;
+			case 'Q': WQ |= (1L << boardIndex++);
+				break;
+			case 'q': BQ |= (1L << boardIndex++);
+				break;
+			case 'K': WK |= (1L << boardIndex++);
+				break;
+			case 'k': BK |= (1L << boardIndex++);
+				break;
+			case '/':
+				break;
+			case '1': boardIndex++;
+				break;
+			case '2': boardIndex += 2;
+				break;
+			case '3': boardIndex += 3;
+				break;
+			case '4': boardIndex += 4;
+				break;
+			case '5': boardIndex += 5;
+				break;
+			case '6': boardIndex += 6;
+				break;
+			case '7': boardIndex += 7;
+				break;
+			case '8': boardIndex += 8;
+				break;
+			default:
+				break;
+			}
+		}
+		bw = (fenString.charAt(++charIndex) == 'w');
+		charIndex += 2;
+		while (fenString.charAt(charIndex) != ' ')
+		{
+			switch (fenString.charAt(charIndex++))
+			{
+			case '-':
+				break;
+			case 'K': CWK = true;
+				break;
+			case 'Q': CWQ = true;
+				break;
+			case 'k': CBK = true;
+				break;
+			case 'q': CBQ = true;
+				break;
+			default:
+				break;
+			}
+		}
+		if (fenString.charAt(++charIndex) != '-')
+		{
+			EP = FileMasks8[fenString.charAt(charIndex++) - 'a'];
+		}
+    }
+    public static void perftRoot(int depth)
+    {
+    	int move;
+        boolean CWKt,CWQt,CBKt,CBQt,bwt;
+        long WPt,WRt,WNt,WBt,WQt,WKt,BPt,BRt,BNt,BBt,BQt,BKt,EPt;
+    	ArrayList<Integer> moves = new ArrayList<Integer>();
+        if (bw) {
+            moves=MoveGen.getPossibleWhiteMoves();
+        } else {
+            moves=MoveGen.getPossibleBlackMoves();
+        }
+        for (int i=0;i<moves.size();i++) {
+            CWKt=CWK;CWQt=CWQ;CBKt=CBK;CBQt=CBQ;bwt=bw;
+            WPt=WP;WRt=WR;WNt=WN;WBt=WB;WQt=WQ;WKt=WK;BPt=BP;BRt=BR;BNt=BN;BBt=BB;BQt=BQ;BKt=BK;EPt=EP;
+        	move = moves.get(i);
+            MoveGen.makeMove(move,bw);
+            //System.out.println("----------------------");
+            //printBoard();
+            //System.out.println("----------------------");
+
+            if ((move & 0x00f00000)==0) {//'regular' move
+                int start = move & 0x000000ff;
+                if (((1L<<start)&WK)!=0) {CWKt=false; CWQt=false;}
+                if (((1L<<start)&BK)!=0) {CBKt=false; CBQt=false;}
+                if (((1L<<start)&WR&(1L<<63))!=0) {CWKt=false;}
+                if (((1L<<start)&WR&(1L<<56))!=0) {CWQt=false;}
+                if (((1L<<start)&BR&(1L<<7))!=0) {CBKt=false;}
+                if (((1L<<start)&BR&1L)!=0) {CBQt=false;}
+            }
+            if (((WK&MoveGen.unsafeForWhite())==0 && bw) || ((BK&MoveGen.unsafeForBlack())==0 && !bw)) {
+            	perftMoveCounter=0;
+                bw = !bw;
+                perft(depth+1);
+                System.out.print(fileTable[move & 0x000000ff]+" "+rankTable[move & 0x000000ff]+ " ");
+                System.out.print(", "+fileTable[(move & 0x0000ff00)>>8]+" "+rankTable[(move & 0x0000ff00)>>8]+ " - ");
+                
+          
+                perftTotalMoveCounter+=perftMoveCounter;
+                System.out.println(perftMoveCounter);
+                perftMoveCounter=0;
+            }
+            CWK=CWKt;CWQ=CWQt;CBK=CBKt;CBQ=CBQt;bw=bwt;
+            WP=WPt;WR=WRt;WN=WNt;WB=WBt;WQ=WQt;WK=WKt;BP=BPt;BR=BRt;BN=BNt;BB=BBt;BQ=BQt;BK=BKt;EP=EPt;
+        }
+        System.out.println("Moves:"+perftTotalMoveCounter);
+    }
+    public static void perft(int depth)
+    {
+    	int move;
+        boolean CWKt,CWQt,CBKt,CBQt,bwt;
+        long WPt,WRt,WNt,WBt,WQt,WKt,BPt,BRt,BNt,BBt,BQt,BKt,EPt;
+        if (depth<perftMaxDepth) {
+            ArrayList<Integer> moves = new ArrayList<Integer>();
+            if (bw) {
+                moves=MoveGen.getPossibleWhiteMoves();
+            } else {
+                moves=MoveGen.getPossibleBlackMoves();
+            }
+            for (int i=0;i<moves.size();i++) {
+                CWKt=CWK;CWQt=CWQ;CBKt=CBK;CBQt=CBQ;bwt=bw;
+                WPt=WP;WRt=WR;WNt=WN;WBt=WB;WQt=WQ;WKt=WK;BPt=BP;BRt=BR;BNt=BN;BBt=BB;BQt=BQ;BKt=BK;EPt=EP;
+            	move = moves.get(i);
+                MoveGen.makeMove(move,bw);
+                //System.out.println("IN:"+i + " depth - "+depth + " "+WP+" "+WR+" "+WN+" "+WB+" "+WQ+" "+WK+" "+BP+" "+BN+" "+BRt+ " "+ BB+" "+BQ+" "+BK+" "+EP+" "+CWK+" "+CWQ+" "+CBK+" "+CBQ+" "+bw);
+                //System.out.println("INt:"+i + " depth - "+depth + " "+WPt+ " "+WRt + " "+ WNt+" "+WBt+" "+WQt+" "+WKt+" "+BPt+" "+BRt+ " "+ BNt+" "+BBt+" "+BQt+" "+BKt+" "+EPt+" "+CWKt+" "+CWQt+" "+CBKt+" "+CBQt+" "+bwt);
+                if ((move & 0x00f00000)==0) {//'regular' move
+                    int start = move & 0x000000ff;
+                    if (((1L<<start)&WK)!=0) {CWKt=false; CWQt=false;}
+                    if (((1L<<start)&BK)!=0) {CBKt=false; CBQt=false;}
+                    if (((1L<<start)&WR&(1L<<63))!=0) {CWKt=false;}
+                    if (((1L<<start)&WR&(1L<<56))!=0) {CWQt=false;}
+                    if (((1L<<start)&BR&(1L<<7))!=0) {CBKt=false;}
+                    if (((1L<<start)&BR&1L)!=0) {CBQt=false;}
+                }
+                
+                //System.out.println(bw + " - bw, depth = "+ depth + " , move no = "+ i);
+
+                if (((WK&MoveGen.unsafeForWhite())==0 && bw) || ((BK&MoveGen.unsafeForBlack())==0 && !bw)) {
+                	//System.out.println("yo");
+                	bw = !bw;
+                    if (depth+1==perftMaxDepth) {++perftMoveCounter;}
+                    perft(depth+1);
+                }
+                CWK=CWKt;CWQ=CWQt;CBK=CBKt;CBQ=CBQt;bw=bwt;
+                WP=WPt;WR=WRt;WN=WNt;WB=WBt;WQ=WQt;WK=WKt;BP=BPt;BR=BRt;BN=BNt;BB=BBt;BQ=BQt;BK=BKt;EP=EPt;
+                //System.out.println("OUT:"+i + " depth - "+depth + " "+WP+" "+WR+" "+WN+" "+WB+" "+WQ+" "+WK+" "+BP+" "+BN+" "+BB+" "+BQ+" "+BK+" "+EP+" "+CWK+" "+CWQ+" "+CBK+" "+CBQ+" "+bw);
+                //System.out.println("OUTt:"+i + " depth - "+depth + " "+WNt+" "+WBt+" "+WQt+" "+WKt+" "+BPt+" "+BNt+" "+BBt+" "+BQt+" "+BKt+" "+EPt+" "+CWKt+" "+CWQt+" "+CBKt+" "+CBQt+" "+bwt);
+            }
+        }
+    }
 }
+
 
