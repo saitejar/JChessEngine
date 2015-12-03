@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -14,14 +15,17 @@ public class Main implements GlobalConstants{
 
 	/**
 	 * @param args
+	 * @throws IOException 
 	 */
-	public static void main(String [] args){
+	public static void main(String [] args) throws IOException{
 		// TODO Auto-generated method stub
 		//MoveGen.chessInit();
-		MoveGen.importFEN("rnb1kbnr/3ppppp/p1p5/8/1p6/1P2P3/2PK1PPP/RNBQ1BNR w kq - 0 7");
+		MoveGen.importFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
 		MoveGen.printBoard();
-
+		System.out.println(MoveGen.CBK +""+MoveGen.CBQ+""+MoveGen.CWK +""+MoveGen.CWQ+""+MoveGen.EP+""+MoveGen.EPc);
         MoveGen.perftRoot(0);
+        //MoveGen.perft(0);
+        System.out.println(MoveGen.perftMoveCounter);
 	}
 
 }

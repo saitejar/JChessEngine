@@ -84,7 +84,7 @@ public interface GlobalConstants {
 	public static final byte DOUBLE_PUSH = 1<<4;
 	public static final byte EN_PASSANT = 1<<5;
 	public static final byte PAWN_PROMOTION = 1<<6;
-	public static final byte CASTLE = (byte) (1<<7);
+	public static final byte CASTLE = 48;
 	
 	public static final byte F_CWK = 7;
 	public static final byte F_CWQ = 8;
